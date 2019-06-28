@@ -1,0 +1,7 @@
+node_modules
+secrets.js
+.DS_Store
+npm-debug.log
+yarn-error.log
+public/js/popup.js
+public/js/popup.js.map
