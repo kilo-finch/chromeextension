@@ -1,5 +1,6 @@
-import React, { Component } from "react";
-import ReactDOM from "react-dom";
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import axios from 'axios';
 
 const getTabs = function(object) {
   return new Promise((resolve, reject) => {
@@ -13,7 +14,20 @@ class App extends Component {
   constructor() {
     super();
     this.state = {};
-    this.closeTab = this.closeTab.bind(this);
+    // this.closeTab = this.closeTab.bind(this);
+    // this.addTab = this.addTab.bind(this);
+  }
+
+  addTab(tab) {
+    const formattedTab = {
+      title: tab.title,
+      url: tab.url,
+      favicon: tab.favIconUrl,
+    };
+
+    axios
+      .post('http://localhost:8080/api/links/', formattedTab)
+      .then(this.closeTab(tab.id));
   }
 
   closeTab(id) {
@@ -34,15 +48,16 @@ class App extends Component {
         <div className="field is-grouped is-grouped-multiline has-icons-left has-icons-right">
           <div className="control">
             <div className="tags has-addons">
-            <span className="icon is-small">
-                    <i className="fas fa-plus" aria-hidden="true" />
-                  </span>
+              <span className="icon is-small" onClick={() => this.addTab(tab)}>
+                <i className="fas fa-plus" aria-hidden="true" />
+              </span>
               <a className="tag is-link">
                 <figure className="image is-16x16">
                   <img src={tab.favIconUrl} />
-
                 </figure>
-                <div className='field' style={{width:"200px"}}>{tab.title.slice(0, 35)}</div>
+                <div className="field" style={{ width: '200px' }}>
+                  {tab.title.slice(0, 35)}
+                </div>
               </a>
               <a
                 className="tag is-delete"
@@ -58,5 +73,4 @@ class App extends Component {
   }
 }
 
-
-ReactDOM.render(<App />, document.getElementById("container"));
+ReactDOM.render(<App />, document.getElementById('container'));
