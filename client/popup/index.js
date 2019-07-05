@@ -1,4 +1,5 @@
 /* eslint-disable no-return-assign */
+// chrome.extension.getBackgroundPage().console.log() console logs in extension
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
@@ -14,8 +15,37 @@ const getTabs = function(object) {
 class App extends Component {
   constructor() {
     super();
-    this.state = {};
+    this.state = {
+      collections: [],
+      collectionId: null,
+    };
+    this.handleChange = this.handleChange.bind(this);
   }
+
+  componentDidMount() {
+    getTabs({}).then(tabs => this.setState({ tabs }));
+    axios
+      .get('http://localhost:8080/api/collections/')
+      .then(res => {
+        const collections = res.data.map(team => {
+          return team.collections;
+        });
+        return collections;
+      })
+      .then(teams => {
+        return teams.reduce((acc, team) => {
+          acc = [...acc, ...team];
+          return acc;
+        }, []);
+      })
+      .then(collections => {
+        this.setState({ collections, collectionId: collections[0].id });
+      })
+      .catch(error => {
+        chrome.extension.getBackgroundPage().console.log(error);
+      });
+  }
+
   sendToHomePage() {
     chrome.tabs.create({ url: 'localhost:8080/home' });
   }
@@ -24,11 +54,15 @@ class App extends Component {
       title: tab.title,
       url: tab.url,
       favicon: tab.favIconUrl,
+      collectionId: this.state.collectionId,
     };
 
     axios
       .post('http://localhost:8080/api/links/', [formattedTab])
-      .then(this.closeTab(tab.id));
+      .then(this.closeTab(tab.id))
+      .catch(error => {
+        chrome.extension.getBackgroundPage().console.log(error);
+      });
   }
 
   saveAllTabs(allTabs) {
@@ -37,12 +71,15 @@ class App extends Component {
         title: tab.title,
         url: tab.url,
         favicon: tab.favIconUrl,
+        collectionId: this.state.collectionId,
       };
     });
 
     axios.post('http://localhost:8080/api/links/', formattedTabs).then(
       allTabs.forEach(tab => {
-        return this.closeTab(tab.id);
+        return this.closeTab(tab.id).catch(error => {
+          chrome.extension.getBackgroundPage().console.log(error);
+        });
       })
     );
   }
@@ -54,14 +91,28 @@ class App extends Component {
     });
   }
 
-  componentDidMount() {
-    getTabs({}).then(tabs => this.setState({ tabs }));
+  handleChange(event) {
+    this.setState({
+      collectionId: event.target.value,
+    });
   }
 
   render() {
     const tabs = this.state.tabs;
+    const collections = this.state.collections;
     return (
       <div>
+        <form>
+          <select value={this.state.collectionId} onChange={this.handleChange}>
+            {collections
+              ? collections.map(collection => (
+                  <option key={collection.id} value={collection.id}>
+                    {collection.name}
+                  </option>
+                ))
+              : null}
+          </select>
+        </form>
         {tabs ? (
           <div>
             {tabs.map(tab => (
