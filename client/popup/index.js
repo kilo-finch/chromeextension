@@ -77,9 +77,7 @@ class App extends Component {
 
     axios.post('http://localhost:8080/api/links/', formattedTabs).then(
       allTabs.forEach(tab => {
-        return this.closeTab(tab.id).catch(error => {
-          chrome.extension.getBackgroundPage().console.log(error);
-        });
+        return this.closeTab(tab.id);
       })
     );
   }
