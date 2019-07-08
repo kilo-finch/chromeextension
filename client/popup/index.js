@@ -12,20 +12,28 @@ const getTabs = function(object) {
   });
 };
 
+if (process.env.NODE_ENV === 'development') {
+  var host = 'http://localhost:8080';
+} else {
+  host = 'https://nak-tabs.herokuapp.com';
+}
+
 class App extends Component {
   constructor() {
     super();
     this.state = {
       collections: [],
-      collectionId: null,
+      collectionId: undefined,
     };
+
     this.handleChange = this.handleChange.bind(this);
   }
 
   componentDidMount() {
     getTabs({}).then(tabs => this.setState({ tabs }));
+
     axios
-      .get('http://localhost:8080/api/collections/')
+      .get(`${host}/api/collections/`)
       .then(res => {
         const collections = res.data.map(team => {
           return team.collections;
@@ -47,7 +55,7 @@ class App extends Component {
   }
 
   sendToHomePage() {
-    chrome.tabs.create({ url: 'localhost:8080/home' });
+    chrome.tabs.create({ url: `${host}/home` });
   }
   saveTab(tab) {
     const formattedTab = {
@@ -58,7 +66,7 @@ class App extends Component {
     };
 
     axios
-      .post('http://localhost:8080/api/links/', [formattedTab])
+      .post(`${host}/api/links/`, [formattedTab])
       .then(this.closeTab(tab.id))
       .catch(error => {
         chrome.extension.getBackgroundPage().console.log(error);
@@ -75,7 +83,7 @@ class App extends Component {
       };
     });
 
-    axios.post('http://localhost:8080/api/links/', formattedTabs).then(
+    axios.post(`${host}/api/links/`, formattedTabs).then(
       allTabs.forEach(tab => {
         return this.closeTab(tab.id);
       })
