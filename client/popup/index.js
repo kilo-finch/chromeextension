@@ -107,60 +107,77 @@ class App extends Component {
     const tabs = this.state.tabs;
     const collections = this.state.collections;
     return (
-      <div>
+      <div className="message is-paddingless is-marginless is-clearfix">
         <form>
-          <select value={this.state.collectionId} onChange={this.handleChange}>
-            {collections
-              ? collections.map(collection => (
-                  <option key={collection.id} value={collection.id}>
-                    {collection.name}
-                  </option>
-                ))
-              : null}
-          </select>
+          <div className="field message is-small is-primary is-paddingless is-marginless">
+            <div className="control message-header">
+              <div className="select is-info is-small">
+                <select
+                  value={this.state.collectionId}
+                  onChange={this.handleChange}
+                >
+                  {collections
+                    ? collections.map(collection => (
+                        <option key={collection.id} value={collection.id}>
+                          {collection.name}
+                        </option>
+                      ))
+                    : null}
+                </select>
+              </div>
+            </div>
+          </div>
         </form>
         {tabs ? (
           <div>
-            {tabs.map(tab => (
-              <div
-                key={tab.id}
-                className="field is-grouped is-grouped-multiline has-icons-left has-icons-right"
-              >
-                <div className="control">
-                  <div className="tags has-addons">
-                    <span
-                      className="icon is-small"
-                      onClick={() => this.saveTab(tab)}
-                    >
-                      <i className="fas fa-plus" aria-hidden="true" />
-                    </span>
-                    <a className="tag is-link">
-                      <figure className="image is-16x16">
-                        <img src={tab.favIconUrl} />
-                      </figure>
-                      <div className="field" style={{ width: '200px' }}>
-                        {tab.title.slice(0, 35)}
+            <table className="">
+              {tabs.map(tab => (
+                <div
+                  key={tab.id}
+                  className="field is-grouped is-grouped-multiline has-icons-left has-icons-right"
+                >
+                  <tr className="">
+                    <div className="control">
+                      <div className="tags has-addons">
+                        <span
+                          className="icon is-small has-text-success"
+                          onClick={() => this.saveTab(tab)}
+                        >
+                          <i
+                            className="fas fa-check-square"
+                            aria-hidden="true"
+                          />
+                        </span>
+                        <a className="tag">
+                          <figure className="image is-16x16">
+                            <img src={tab.favIconUrl} />
+                          </figure>
+                          <div className="field" style={{ width: '210px' }}>
+                            {tab.title.slice(0, 34)}
+                          </div>
+                        </a>
+                        <a
+                          className="delete is-small"
+                          onClick={() => this.closeTab(tab.id)}
+                        />
                       </div>
-                    </a>
-                    <a
-                      className="tag is-delete"
-                      onClick={() => this.closeTab(tab.id)}
-                    />
-                  </div>
+                    </div>
+                  </tr>
                 </div>
-              </div>
-            ))}
+              ))}
+            </table>
+            <br />
             <button
-              className="button"
+              className="button is-info is-outlined"
               type="button"
               onClick={() => {
                 this.saveAllTabs(tabs);
               }}
             >
               Save All Tabs
-            </button>
+            </button>{' '}
             <button
-              className="button"
+              className="button is-info is-outlined"
               type="submit"
               onClick={this.sendToHomePage}
             >
