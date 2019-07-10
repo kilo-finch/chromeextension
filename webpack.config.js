@@ -1,30 +1,27 @@
-const isDev = process.env.NODE_ENV === 'development'
-const path = require('path')
+const isDev = process.env.NODE_ENV === 'development';
+const path = require('path');
 
-module.exports = 
-{
+module.exports = {
   mode: isDev ? 'development' : 'production',
-  entry: 
-    './client/popup/index.js'
-  ,
+  entry: './client/popup/index.js',
   output: {
     path: __dirname,
-    filename: './public/js/popup.js'
+    filename: './public/js/popup.js',
   },
   resolve: {
-    extensions: ['.js', '.jsx']
+    extensions: ['.js', '.jsx'],
   },
   devtool: 'source-map',
   watchOptions: {
-    ignored: /node_modules/
+    ignored: /node_modules/,
   },
   module: {
     rules: [
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        loader: 'babel-loader'
-      }
-    ]
-  }
-}
+        loader: 'babel-loader',
+      },
+    ],
+  },
+};

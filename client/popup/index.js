@@ -110,7 +110,8 @@ class App extends Component {
       <div className="message is-paddingless is-marginless is-clearfix">
         <form>
           <div className="field message is-small is-primary is-paddingless is-marginless">
-            <div className="control message-header">
+            <div className="control level message-header">
+              <p className="level-left">Collection: </p>
               <div className="select is-info is-small">
                 <select
                   value={this.state.collectionId}
