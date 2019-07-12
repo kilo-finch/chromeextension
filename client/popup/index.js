@@ -74,7 +74,7 @@ class App extends Component {
   }
 
   saveAllTabs(allTabs) {
-    const formattedTabs = allTabs.map(tab => {
+    let formattedTabs = allTabs.map(tab => {
       return {
         title: tab.title,
         url: tab.url,
@@ -82,11 +82,13 @@ class App extends Component {
         collectionId: this.state.collectionId,
       };
     });
-
+    formattedTabs = formattedTabs.filter(tab => tab.title !== 'nak');
     axios.post(`${host}/api/links/`, formattedTabs).then(
-      allTabs.forEach(tab => {
-        return this.closeTab(tab.id);
-      })
+      allTabs
+        .filter(tab => tab.title !== 'nak')
+        .forEach(tab => {
+          return this.closeTab(tab.id);
+        })
     );
   }
 
