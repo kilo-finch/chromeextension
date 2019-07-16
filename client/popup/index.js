@@ -74,6 +74,7 @@ class App extends Component {
   }
 
   saveAllTabs(allTabs) {
+    this.sendToHomePage();
     let formattedTabs = allTabs.map(tab => {
       return {
         title: tab.title,
