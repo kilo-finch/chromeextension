@@ -18,14 +18,15 @@ if (process.env.NODE_ENV === 'development') {
   host = 'https://nak-tabs.herokuapp.com';
 }
 
+const initialState = {
+  collections: [],
+  tabs: [],
+  collectionId: undefined,
+};
 class App extends Component {
   constructor() {
     super();
-    this.state = {
-      collections: [],
-      tabs: [],
-      collectionId: undefined,
-    };
+    this.state = initialState;
 
     this.handleChange = this.handleChange.bind(this);
   }
@@ -66,7 +67,7 @@ class App extends Component {
         chrome.extension.getBackgroundPage().console.log(error);
         if (error && error.response.status === 403) {
           localStorage.clear();
-          this.setState({ collections: [] });
+          this.setState(initialState);
         }
       });
   }
