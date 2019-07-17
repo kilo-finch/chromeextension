@@ -23,6 +23,7 @@ class App extends Component {
     super();
     this.state = {
       collections: [],
+      tabs: [],
       collectionId: undefined,
     };
 
@@ -30,6 +31,10 @@ class App extends Component {
   }
 
   componentDidMount() {
+    this.setState({
+      collections: JSON.parse(localStorage.getItem('collections')) || [],
+    });
+
     getTabs({}).then(tabs => this.setState({ tabs }));
 
     axios
@@ -47,10 +52,22 @@ class App extends Component {
         }, []);
       })
       .then(collections => {
-        this.setState({ collections, collectionId: collections[0].id });
+        this.setState(
+          { collections, collectionId: collections[0].id },
+          function() {
+            localStorage.setItem(
+              'collections',
+              JSON.stringify(this.state.collections)
+            );
+          }
+        );
       })
       .catch(error => {
         chrome.extension.getBackgroundPage().console.log(error);
+        if (error && error.response.status === 403) {
+          localStorage.clear();
+          this.setState({ collections: [] });
+        }
       });
   }
 
@@ -109,7 +126,7 @@ class App extends Component {
   render() {
     const tabs = this.state.tabs;
     const collections = this.state.collections;
-    return (
+    return collections.length ? (
       <div className="message is-paddingless is-marginless is-clearfix">
         <form>
           <div className="field message is-small is-primary is-paddingless is-marginless">
@@ -191,6 +208,26 @@ class App extends Component {
         ) : (
           <h1>loading</h1>
         )}
+      </div>
+    ) : (
+      <div className="level">
+        <div className="field message is-small is-primary is-paddingless is-marginless">
+          <div className="control level message-header">
+            <p style={{ paddingLeft: '20px' }} className="level-item">
+              Please visit NAK to login!
+            </p>
+          </div>{' '}
+        </div>
+        <br />
+        <div style={{ paddingLeft: '83px' }}>
+          <button
+            type="button"
+            className="button is-link level-item is-size-6 has-text-weight-bold"
+            onClick={this.sendToHomePage}
+          >
+            Visit NAK
+          </button>
+        </div>
       </div>
     );
   }
